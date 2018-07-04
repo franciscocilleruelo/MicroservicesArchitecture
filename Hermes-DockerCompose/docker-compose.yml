@@ -1,0 +1,93 @@
+version: '2'
+services:
+  discoveryserver:
+     image:   cilleruelo/microservices/discoveryserver:${BUILD_NAME}
+     ports:
+         - "8761:8761"
+     environment:
+        PROFILE: "dev"
+        EUREKASERVER_URI: "http://discoveryserver:8761/eureka/"
+        CONFIGSERVER_URI: "http://configserver:8888"
+  
+  configserver:
+      image: cilleruelo/microservices/configserver:${BUILD_NAME}
+      ports:
+         - "8888:8888"
+      links:
+         - "discoveryserver:discoveryserver"
+      environment:
+         EUREKASERVER_URI: "http://discoveryserver:8761/eureka/"
+         EUREKASERVER_PORT: "8761"
+         PROFILE: "dev"
+         
+  tracingserver:
+      image: cilleruelo/microservices/tracingserver:${BUILD_NAME}
+      ports:
+        - "9411:9411"
+      environment:
+        PROFILE: "dev"
+        SERVER_PORT: "9411"
+        EUREKASERVER_PORT: "8761"
+        CONFIGSERVER_PORT:   "8888"
+        EUREKASERVER_URI: "http://discoveryserver:8761/eureka/"
+        CONFIGSERVER_URI: "http://configserver:8888"
+  
+  gatewayserver:
+      image: cilleruelo/microservices/gatewayserver:${BUILD_NAME}
+      ports:
+        - "5555:5555"
+      links:
+        - "discoveryserver:discoveryserver"
+        - "configserver:configserver"
+      environment:
+        PROFILE: "dev"
+        SERVER_PORT: "5555"
+        EUREKASERVER_URI: "http://discoveryserver:8761/eureka/"
+        CONFIGSERVER_URI: "http://configserver:8888"
+        EUREKASERVER_PORT:   "8761"
+        CONFIGSERVER_PORT:   "8888"
+        
+  authorizationserver:
+      image: cilleruelo/microservices/authorizationserver:${BUILD_NAME}
+      ports:
+        - "9550:9550"
+      links:
+        - "configserver:configserver"
+        - "discoveryserver:discoveryserver"
+        - "gatewayserver:gatewayserver"
+      environment:
+        PROFILE: "dev"
+        SERVER_PORT: "9550"
+        EUREKASERVER_URI: "http://discoveryserver:8761/eureka/"
+        CONFIGSERVER_URI: "http://configserver:8888"
+        EUREKASERVER_PORT:   "8761"
+        CONFIGSERVER_PORT:   "8888"
+  
+  invoicesservice:
+      image: cilleruelo/microservices/invoicesservice:${BUILD_NAME}
+      ports:
+        - "9600:9600"
+      links:
+        - "configserver:configserver"
+        - "discoveryserver:discoveryserver"
+        - "gatewayserver:gatewayserver"
+        - "kafkaserver:kafkaserver"
+        - "authorizationserver:authorizationserver"
+      environment:
+        PROFILE: "dev"
+        SERVER_PORT: "8080"
+        EUREKASERVER_URI: "http://discoveryserver:8761/eureka/"
+        KAFKASERVER_URI: "kafkaserver"
+        ZKSERVER_URI: "kafkaserver"
+        EUREKASERVER_PORT:   "8761"
+        CONFIGSERVER_PORT:   "8888"
+        KAFKASERVER_PORT:    "2181"
+        ZIPKIN_PORT:         "9411"
+        ZIPKIN_URI: "http://kafkaserver:9411"
+        CONFIGSERVER_URI: "http://configserver:8888"       
+  
+  kafkaserver:
+      image: spotify/kafka
+      ports:
+        - 2181:2181
+        - 9092:9092

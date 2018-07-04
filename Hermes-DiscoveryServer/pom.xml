@@ -1,0 +1,113 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.cilleruelo.microservices</groupId>
+	<artifactId>DiscoveryServer</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<name>DiscoveryServer</name>
+	<description>Discovery Server (Eureka)</description>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.4.7.RELEASE</version>
+		<relativePath />
+	</parent>
+
+	<distributionManagement>
+		<repository>
+			<id>central</id>
+			<name>libs-release</name>
+			<url>http://10.150.7.12:8081/artifactory/libs-release</url>
+		</repository>
+		<snapshotRepository>
+			<id>central</id>
+			<name>libs-snapshot</name>
+			<url>http://10.150.7.12:8081/artifactory/libs-snapshot</url>
+		</snapshotRepository>
+		
+	</distributionManagement>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+		<start-class>com.cilleruelo.microservices.configServer.ConfigServerApplication</start-class>
+		<docker.image.name>DiscoveryServer</docker.image.name>
+		<docker.image.tag>${project.version}</docker.image.tag>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>Camden.SR5</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-eureka-server</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>com.cilleruelo.microservices.discoveryServer.DiscoveryServerApplication</mainClass>
+					<executable>true</executable>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target</outputDirectory>
+							<resources>
+								<resource>									
+									<directory>src/main/docker</directory>
+									<filtering>true</filtering>
+								</resource>					
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>dockerfile-maven-plugin</artifactId>
+				<version>1.4.3</version>
+				<executions>
+					<execution>
+						<id>default</id>
+						<goals>
+							<goal>build</goal>
+							<goal>push</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<contextDirectory>target</contextDirectory>
+					<repository>cilleruelo/microservices/discoveryserver</repository>
+					<tag>${project.version}</tag>
+					<useMavenSettingsForAuth>true</useMavenSettingsForAuth>	
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
