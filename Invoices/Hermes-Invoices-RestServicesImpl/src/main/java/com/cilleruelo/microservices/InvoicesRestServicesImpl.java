@@ -31,7 +31,6 @@ public class InvoicesRestServicesImpl {
 	public static void main( String[] args ) 
     {
     	SpringApplication.run(InvoicesRestServicesImpl.class, args);
-    	LOG.warn("XXXXXXXXXXXXXXXXXXXXXXXXX "+ System.getProperty("pf4j.pluginsDir", "plugins"));
     }
 	
 	/**
@@ -48,7 +47,7 @@ public class InvoicesRestServicesImpl {
 		/**
 		The way to use this template will be:
 			1. Autowire the rest template on the class: 
-				@Autowaired
+				@Autowired
 				private RestTemplate restTemplate;
 			2. Where the template has to be used to call some endpoint from another service
 				resteTemplate.exchange("http://<serviceName>/<serviceEndpoint>", <HTTPMethod>,...<additionalParameters>);
