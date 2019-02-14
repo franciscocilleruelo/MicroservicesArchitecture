@@ -29,9 +29,9 @@ public class InvoicesRestServicesImpl {
 	private static final Logger LOG = LoggerFactory.getLogger(InvoicesRestServicesImpl.class);
 	
 	public static void main( String[] args ) 
-    {
-    	SpringApplication.run(InvoicesRestServicesImpl.class, args);
-    }
+    	{
+    		SpringApplication.run(InvoicesRestServicesImpl.class, args);
+    	}
 	
 	/**
 	 * Tells Spring Cloud to create a Ribbon backed RestTemplate class. 
