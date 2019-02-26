@@ -32,6 +32,6 @@ echo "********************************************************"
 java -Djava.security.egd=file:/dev/./urandom -Dserver.port=$SERVER_PORT   \
      -Deureka.client.serviceUrl.defaultZone=$EUREKASERVER_URI             \
      -Dspring.cloud.stream.kafka.binder.zkNodes=$KAFKASERVER_URI          \
-     -Dpf4j.pluginsDir=/usr/local/invoicesService/plugins -Dspring.cloud.stream.kafka.binder.brokers=$ZKSERVER_URI             \
+     -Dspring.cloud.stream.kafka.binder.brokers=$ZKSERVER_URI             \
      -Dspring.cloud.config.uri=$CONFIGSERVER_URI -Dspring.zipkin.baseUrl=$ZIPKIN_URI  \
      -Dspring.profiles.active=$PROFILE -jar /usr/local/invoicesService/@project.build.finalName@.jar
